@@ -7,9 +7,9 @@ export interface MapConfig {
   style: string | mapboxgl.Style
 }
 
-export interface MarkerData {
+export interface Location {
   id: string
-  coordinates: [number, number]
+  coordinates: [number, number] // [longitude, latitude]
   label: string
-  description?: string
+  link: string
 }

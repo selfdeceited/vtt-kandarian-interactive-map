@@ -23,7 +23,7 @@ export function useMapbox(
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
-    map.addControl(new mapboxgl.ScaleControl(), "bottom-left");
+    map.addControl(new mapboxgl.ScaleControl({ unit: "metric" }));
 
     mapRef.current = map;
 
@@ -32,12 +32,12 @@ export function useMapbox(
         type: "image",
         url: imageLink,
         // Coordinates calculated to match image aspect ratio (6000x4000, 3:2)
-        // Lat span: 8.501°, Lon span corrected for Mercator at ~42°N: 8.501 * 1.5 / cos(42°) ≈ 17.15°
+        // Lat span: 2.125°, Lon span corrected for Mercator at ~42°N: 2.125 * 1.5 / cos(42°) ≈ 4.289°
         coordinates: [
-          [-84.545, 46.437], // Top Left
-          [-67.395, 46.437], // Top Right
-          [-67.395, 37.936], // Bottom Right
-          [-84.545, 37.936], // Bottom Left
+          [-78.114, 43.249], // Top Left
+          [-73.826, 43.249], // Top Right
+          [-73.826, 41.124], // Bottom Right
+          [-78.114, 41.124], // Bottom Left
         ],
       });
 

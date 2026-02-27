@@ -13,4 +13,13 @@ export default defineConfig({
     // Mapbox GL v3 references process.env.NODE_ENV internally
     'process.env': {},
   },
+  server: {
+    proxy: {
+      '/api/jsonsilo': {
+        target: 'https://api.jsonsilo.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api\/jsonsilo/, ''),
+      },
+    },
+  },
 })

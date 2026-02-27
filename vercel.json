@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/jsonsilo/:path*",
+      "destination": "https://api.jsonsilo.com/:path*"
+    }
+  ]
+}
