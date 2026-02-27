@@ -11,21 +11,29 @@ interface LocationPanelProps {
 
 export function LocationPanel({ location, onClose }: LocationPanelProps) {
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '20px',
-        right: '8px',
-        bottom: '20px',
-        width: 'min(480px, calc(100vw - 16px))',
-        zIndex: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-      }}
-    >
+    <>
+      <style>{`
+        .location-panel {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          bottom: 20px;
+          width: 480px;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        @media (max-width: 519px) {
+          .location-panel {
+            right: 8px;
+            width: calc(100vw - 16px);
+          }
+        }
+      `}</style>
+    <div className="location-panel">
       {/* Panel header */}
       <div
         style={{
@@ -91,5 +99,6 @@ export function LocationPanel({ location, onClose }: LocationPanelProps) {
         )}
       </div>
     </div>
+    </>
   )
 }
