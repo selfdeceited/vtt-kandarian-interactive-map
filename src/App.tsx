@@ -19,7 +19,7 @@ const MAP_CONFIG: MapConfig = {
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useMapbox(containerRef, MAP_CONFIG);
+  const { mapRef, isMapReady } = useMapbox(containerRef, MAP_CONFIG);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [pendingCoordinates, setPendingCoordinates] = useState<
@@ -144,7 +144,7 @@ function App() {
           onCancel={handleCancelEdit}
         />
       )}
-      {(status === "loading" || isSyncing) && (
+      {(!isMapReady || status === "loading" || isSyncing) && (
         <div
           style={{
             position: "absolute",

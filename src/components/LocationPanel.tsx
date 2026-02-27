@@ -15,9 +15,9 @@ export function LocationPanel({ location, onClose }: LocationPanelProps) {
       style={{
         position: 'absolute',
         top: '20px',
-        right: '20px',
+        right: '8px',
         bottom: '20px',
-        width: '480px',
+        width: 'min(480px, calc(100vw - 16px))',
         zIndex: 10,
         display: 'flex',
         flexDirection: 'column',

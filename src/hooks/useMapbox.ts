@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import type { RefObject } from "react";
 import type { MapConfig } from "@/types/map";
@@ -9,6 +9,7 @@ export function useMapbox(
   config: MapConfig,
 ) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -51,6 +52,8 @@ export function useMapbox(
       });
     });
 
+    map.once("idle", () => setIsMapReady(true));
+
     return () => {
       map.remove();
       mapRef.current = null;
@@ -59,5 +62,5 @@ export function useMapbox(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Map initializes once; config changes applied imperatively via mapRef
 
-  return mapRef;
+  return { mapRef, isMapReady };
 }
