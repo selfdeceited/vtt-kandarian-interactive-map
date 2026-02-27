@@ -122,7 +122,9 @@ function App() {
       }}
     >
       <MapboxMap containerRef={containerRef} />
-      <EditModeToggle isEditMode={isEditMode} onToggle={handleToggleEditMode} />
+      {import.meta.env.DEV && (
+        <EditModeToggle isEditMode={isEditMode} onToggle={handleToggleEditMode} />
+      )}
       {pendingCoordinates && (
         <AddLocationForm
           mapRef={mapRef}
