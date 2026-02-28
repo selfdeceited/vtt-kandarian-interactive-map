@@ -3,6 +3,10 @@
     {
       "source": "/api/jsonsilo/:path*",
       "destination": "https://api.jsonsilo.com/:path*"
+    },
+    {
+      "source": "/api/world-img/:path*",
+      "destination": "https://vtt-kandarian-world-info.vercel.app/img/:path*"
     }
   ]
 }
