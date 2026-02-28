@@ -5,7 +5,7 @@ export const MAPS: MapDefinition[] = [
     id: 'kandarian',
     label: 'Kandarian',
     imageUrl:
-      '/api/world-img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/%D0%93%D0%B5%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F/kandarian_final_v2.webp',
+      'https://vtt-kandarian-world-info.vercel.app/img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/%D0%93%D0%B5%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F/kandarian_final_v2.webp',
     // Coordinates calculated to match image aspect ratio (6000x4000, 3:2)
     // Lat span: 2.125°, Lon span corrected for Mercator at ~42°N: 2.125 * 1.5 / cos(42°) ≈ 4.289°
     imageCoordinates: [
@@ -21,7 +21,7 @@ export const MAPS: MapDefinition[] = [
     id: 'arnen',
     label: 'Arnen',
     imageUrl:
-      '/api/world-img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/assets/arnen_large.webp',
+      'https://vtt-kandarian-world-info.vercel.app/img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/assets/arnen_large.webp',
     // Placeholder — replace with real bounds once known
     // Lat span: 0.0068°, Lon span: 0.0136°
     imageCoordinates: [

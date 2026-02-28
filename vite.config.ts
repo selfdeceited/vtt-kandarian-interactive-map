@@ -20,11 +20,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api\/jsonsilo/, ''),
       },
-      '/api/world-img': {
-        target: 'https://vtt-kandarian-world-info.vercel.app',
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/api\/world-img/, '/img'),
-      },
     },
   },
 })
