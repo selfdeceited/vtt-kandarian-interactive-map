@@ -1,25 +1,35 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { MapboxMap } from "@/components/MapboxMap";
 import { EditModeToggle } from "@/components/EditModeToggle";
 import { AddLocationForm } from "@/components/AddLocationForm";
 import { EditLocationForm } from "@/components/EditLocationForm";
 import { LocationPanel } from "@/components/LocationPanel";
+import { MapSwitcherPanel } from "@/components/MapSwitcherPanel";
 import { useMapbox } from "@/hooks/useMapbox";
 import { useLocations } from "@/hooks/useLocations";
 import { useMarkers } from "@/hooks/useMarkers";
 import { useMapClickHandler } from "@/hooks/useMapClickHandler";
-import type { Location, MapConfig } from "@/types/map";
+import { MAPS, DEFAULT_MAP_ID } from "@/lib/maps";
+import type { Location } from "@/types/map";
 
-const MAP_CONFIG: MapConfig = {
-  accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
-  center: [-75.97, 42.187],
-  zoom: 9,
-  style: { version: 8, sources: {}, layers: [] },
-};
+const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+function getInitialMapId(): string {
+  const hash = window.location.hash.slice(1); // strip '#'
+  return MAPS.some((m) => m.id === hash) ? hash : DEFAULT_MAP_ID;
+}
 
 function App() {
+  const [activeMapId, setActiveMapId] = useState(getInitialMapId);
+  const activeMapDef = MAPS.find((m) => m.id === activeMapId)!;
+
+  // Keep hash in sync with active map
+  useEffect(() => {
+    window.location.hash = activeMapId;
+  }, [activeMapId]);
+
   const containerRef = useRef<HTMLDivElement>(null);
-  const { mapRef, isMapReady } = useMapbox(containerRef, MAP_CONFIG);
+  const { mapRef, isMapReady } = useMapbox(containerRef, ACCESS_TOKEN, activeMapDef);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [pendingCoordinates, setPendingCoordinates] = useState<
@@ -35,7 +45,19 @@ function App() {
     addLocation,
     deleteLocation,
     updateLocation,
-  } = useLocations();
+  } = useLocations(activeMapId);
+
+  const handleSelectMap = useCallback(
+    (mapId: string) => {
+      if (mapId === activeMapId) return;
+      setIsEditMode(false);
+      setPendingCoordinates(null);
+      setActiveLocation(null);
+      setEditingLocation(null);
+      setActiveMapId(mapId);
+    },
+    [activeMapId],
+  );
 
   const handleMapClick = useCallback((coords: [number, number]) => {
     setPendingCoordinates(coords);
@@ -121,7 +143,12 @@ function App() {
         position: "relative",
       }}
     >
-      <MapboxMap containerRef={containerRef} />
+      <MapboxMap key={activeMapId} containerRef={containerRef} />
+      <MapSwitcherPanel
+        maps={MAPS}
+        activeMapId={activeMapId}
+        onSelect={handleSelectMap}
+      />
       {import.meta.env.DEV && (
         <EditModeToggle isEditMode={isEditMode} onToggle={handleToggleEditMode} />
       )}

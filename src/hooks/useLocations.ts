@@ -1,45 +1,61 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import type { Location } from '@/types/map'
+import type { Location, MapStore } from '@/types/map'
 
 const SILO_UUID = '8ee3d1ad-fe62-4ac5-9838-8b1ccbccac89'
 const PUBLIC_URL = `/api/jsonsilo/public/${SILO_UUID}`
 const MANAGE_URL = `/api/jsonsilo/api/v1/manage/${SILO_UUID}`
 
-async function fetchLocations(): Promise<Location[]> {
+async function fetchStore(): Promise<MapStore[]> {
   const res = await fetch(PUBLIC_URL)
-  if (!res.ok) throw new Error(`Failed to fetch locations: ${res.status}`)
+  if (!res.ok) throw new Error(`Failed to fetch store: ${res.status}`)
   const data: unknown = await res.json()
-  if (!Array.isArray(data)) throw new Error('Unexpected response shape')
-  return data as Location[]
+  if (!Array.isArray(data)) return []
+  // Legacy flat Location[] — migrate to MapStore[] under 'kandarian'
+  if (data.length === 0 || !('map' in data[0])) {
+    return [{ map: 'kandarian', markers: data as Location[] }]
+  }
+  return data as MapStore[]
 }
 
-async function persistLocations(locations: Location[]): Promise<void> {
+async function persistStore(store: MapStore[]): Promise<void> {
   const res = await fetch(MANAGE_URL, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'X-MAN-API': import.meta.env.VITE_SILO_JSON_KEY,
     },
-    body: JSON.stringify({ file_data: locations }),
+    body: JSON.stringify({ file_data: store }),
   })
-  if (!res.ok) throw new Error(`Failed to save locations: ${res.status}`)
+  if (!res.ok) throw new Error(`Failed to save store: ${res.status}`)
+}
+
+function getMarkers(store: MapStore[], mapId: string): Location[] {
+  return store.find(s => s.map === mapId)?.markers ?? []
+}
+
+function setMarkers(store: MapStore[], mapId: string, markers: Location[]): MapStore[] {
+  const exists = store.some(s => s.map === mapId)
+  if (exists) {
+    return store.map(s => s.map === mapId ? { ...s, markers } : s)
+  }
+  return [...store, { map: mapId, markers }]
 }
 
 export type LocationsStatus = 'loading' | 'ready' | 'error'
 
-export function useLocations() {
-  const [locations, setLocations] = useState<Location[]>([])
+export function useLocations(mapId: string) {
+  const [store, setStore] = useState<MapStore[]>([])
   const [status, setStatus] = useState<LocationsStatus>('loading')
   const [isSyncing, setIsSyncing] = useState(false)
-  const locationsRef = useRef<Location[]>([])
+  const storeRef = useRef<MapStore[]>([])
 
   useEffect(() => {
     let cancelled = false
-    fetchLocations()
+    fetchStore()
       .then(data => {
         if (!cancelled) {
-          locationsRef.current = data
-          setLocations(data)
+          storeRef.current = data
+          setStore(data)
           setStatus('ready')
         }
       })
@@ -49,33 +65,38 @@ export function useLocations() {
     return () => { cancelled = true }
   }, [])
 
-  const persist = useCallback((next: Location[]) => {
+  const persist = useCallback((next: MapStore[]) => {
     setIsSyncing(true)
-    persistLocations(next)
+    persistStore(next)
       .catch(console.error)
       .finally(() => setIsSyncing(false))
   }, [])
 
   const addLocation = useCallback((location: Location) => {
-    const next = [...locationsRef.current, location]
-    locationsRef.current = next
-    setLocations(next)
+    const current = getMarkers(storeRef.current, mapId)
+    const next = setMarkers(storeRef.current, mapId, [...current, location])
+    storeRef.current = next
+    setStore(next)
     persist(next)
-  }, [persist])
+  }, [mapId, persist])
 
   const deleteLocation = useCallback((id: string) => {
-    const next = locationsRef.current.filter(l => l.id !== id)
-    locationsRef.current = next
-    setLocations(next)
+    const current = getMarkers(storeRef.current, mapId)
+    const next = setMarkers(storeRef.current, mapId, current.filter(l => l.id !== id))
+    storeRef.current = next
+    setStore(next)
     persist(next)
-  }, [persist])
+  }, [mapId, persist])
 
   const updateLocation = useCallback((updated: Location) => {
-    const next = locationsRef.current.map(l => l.id === updated.id ? updated : l)
-    locationsRef.current = next
-    setLocations(next)
+    const current = getMarkers(storeRef.current, mapId)
+    const next = setMarkers(storeRef.current, mapId, current.map(l => l.id === updated.id ? updated : l))
+    storeRef.current = next
+    setStore(next)
     persist(next)
-  }, [persist])
+  }, [mapId, persist])
+
+  const locations = getMarkers(store, mapId)
 
   return { locations, status, isSyncing, addLocation, deleteLocation, updateLocation }
 }

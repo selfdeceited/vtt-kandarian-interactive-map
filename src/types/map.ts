@@ -11,3 +11,22 @@ export interface Location {
   label: string;
   link: string;
 }
+
+export interface MapDefinition {
+  id: string;
+  label: string;
+  imageUrl: string;
+  imageCoordinates: [
+    [number, number],
+    [number, number],
+    [number, number],
+    [number, number],
+  ];
+  center: [number, number];
+  zoom: number;
+}
+
+export interface MapStore {
+  map: string; // matches MapDefinition.id
+  markers: Location[];
+}

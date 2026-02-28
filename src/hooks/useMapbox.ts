@@ -1,26 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import type { RefObject } from "react";
-import type { MapConfig } from "@/types/map";
-import { imageLink } from "@/lib/imageLink";
+import type { MapDefinition } from "@/types/map";
 
 export function useMapbox(
   containerRef: RefObject<HTMLDivElement | null>,
-  config: MapConfig,
+  accessToken: string,
+  mapDef: MapDefinition,
 ) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    if (!containerRef.current) return;
 
-    mapboxgl.accessToken = config.accessToken;
+    setIsMapReady(false);
+    mapboxgl.accessToken = accessToken;
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: config.style,
-      center: config.center,
-      zoom: config.zoom,
+      style: { version: 8, sources: {}, layers: [] },
+      center: mapDef.center,
+      zoom: mapDef.zoom,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
@@ -28,24 +29,20 @@ export function useMapbox(
 
     mapRef.current = map;
 
+    const sourceId = `${mapDef.id}-map`;
+    const layerId = `${mapDef.id}-map-layer`;
+
     map.on("load", () => {
-      map.addSource("kandarian-map", {
+      map.addSource(sourceId, {
         type: "image",
-        url: imageLink,
-        // Coordinates calculated to match image aspect ratio (6000x4000, 3:2)
-        // Lat span: 2.125°, Lon span corrected for Mercator at ~42°N: 2.125 * 1.5 / cos(42°) ≈ 4.289°
-        coordinates: [
-          [-78.114, 43.249], // Top Left
-          [-73.826, 43.249], // Top Right
-          [-73.826, 41.124], // Bottom Right
-          [-78.114, 41.124], // Bottom Left
-        ],
+        url: mapDef.imageUrl,
+        coordinates: mapDef.imageCoordinates,
       });
 
       map.addLayer({
-        id: "kandarian-map-layer",
+        id: layerId,
         type: "raster",
-        source: "kandarian-map",
+        source: sourceId,
         paint: {
           "raster-opacity": 0.85,
         },
@@ -60,7 +57,7 @@ export function useMapbox(
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Map initializes once; config changes applied imperatively via mapRef
+  }, [mapDef]); // Re-runs when the active map changes; containerRef and accessToken are stable
 
   return { mapRef, isMapReady };
 }
