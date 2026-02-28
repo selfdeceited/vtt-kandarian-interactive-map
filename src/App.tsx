@@ -4,6 +4,7 @@ import { EditModeToggle } from "@/components/EditModeToggle";
 import { AddLocationForm } from "@/components/AddLocationForm";
 import { EditLocationForm } from "@/components/EditLocationForm";
 import { LocationPanel } from "@/components/LocationPanel";
+import { LabelPopover } from "@/components/LabelPopover";
 import { MapSwitcherPanel } from "@/components/MapSwitcherPanel";
 import { useMapbox } from "@/hooks/useMapbox";
 import { useLocations } from "@/hooks/useLocations";
@@ -36,6 +37,7 @@ function App() {
     [number, number] | null
   >(null);
   const [activeLocation, setActiveLocation] = useState<Location | null>(null);
+  const [popoverPixel, setPopoverPixel] = useState<{ x: number; y: number } | null>(null);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
 
   const {
@@ -75,13 +77,27 @@ function App() {
     setPendingCoordinates(null);
   }, []);
 
-  const handleViewLocation = useCallback((location: Location) => {
+  const handleViewLocation = useCallback((location: Location, pixel: { x: number; y: number }) => {
     setActiveLocation(location);
+    setPopoverPixel(pixel);
   }, []);
 
   const handleClosePanel = useCallback(() => {
     setActiveLocation(null);
+    setPopoverPixel(null);
   }, []);
+
+  // Hide the label popover when the user pans the map
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const dismiss = () => {
+      setActiveLocation((loc) => (loc && !loc.link ? null : loc));
+      setPopoverPixel(null);
+    };
+    map.on('movestart', dismiss);
+    return () => { map.off('movestart', dismiss); };
+  }, [mapRef, isMapReady]);
 
   const handleEditLocation = useCallback((location: Location) => {
     setEditingLocation(location);
@@ -161,7 +177,9 @@ function App() {
         />
       )}
       {activeLocation && (
-        <LocationPanel location={activeLocation} onClose={handleClosePanel} />
+        activeLocation.link
+          ? <LocationPanel location={activeLocation} onClose={handleClosePanel} />
+          : <LabelPopover location={activeLocation} pixel={popoverPixel} onClose={handleClosePanel} />
       )}
       {editingLocation && (
         <EditLocationForm

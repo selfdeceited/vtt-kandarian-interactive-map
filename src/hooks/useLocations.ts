@@ -1,5 +1,16 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import type { Location, MapStore } from '@/types/map'
+import type { Location, LocationType, MapStore } from '@/types/map'
+
+function normaliseMarker(m: unknown): Location {
+  const loc = m as Record<string, unknown>
+  return {
+    id: loc.id as string,
+    coordinates: loc.coordinates as [number, number],
+    label: loc.label as string,
+    link: (loc.link as string) ?? '',
+    type: (['settlement', 'other'].includes(loc.type as string) ? loc.type : 'other') as LocationType,
+  }
+}
 
 const SILO_UUID = '8ee3d1ad-fe62-4ac5-9838-8b1ccbccac89'
 const PUBLIC_URL = `/api/jsonsilo/public/${SILO_UUID}`
@@ -12,9 +23,9 @@ async function fetchStore(): Promise<MapStore[]> {
   if (!Array.isArray(data)) return []
   // Legacy flat Location[] — migrate to MapStore[] under 'kandarian'
   if (data.length === 0 || !('map' in data[0])) {
-    return [{ map: 'kandarian', markers: data as Location[] }]
+    return [{ map: 'kandarian', markers: data.map(normaliseMarker) }]
   }
-  return data as MapStore[]
+  return (data as MapStore[]).map(s => ({ ...s, markers: s.markers.map(normaliseMarker) }))
 }
 
 async function persistStore(store: MapStore[]): Promise<void> {

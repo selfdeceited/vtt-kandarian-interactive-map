@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import type { RefObject } from "react";
-import type { Location } from "@/types/map";
+import type { Location, LocationType } from "@/types/map";
 
 interface UseMarkersOptions {
   mapRef: RefObject<mapboxgl.Map | null>;
   locations: Location[];
   isEditMode: boolean;
-  onViewLocation: (location: Location) => void;
+  onViewLocation: (location: Location, pixel: { x: number; y: number }) => void;
   onEditLocation: (location: Location) => void;
   onMoveLocation: (id: string, coordinates: [number, number]) => void;
 }
@@ -17,7 +17,48 @@ interface MarkerRecord {
   cleanup: () => void;
 }
 
-function createMarkerElement(isEditMode: boolean): HTMLElement {
+const SETTLEMENT_SVG = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+    <!-- Base wall -->
+    <rect x="3" y="16" width="26" height="12" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
+    <!-- Gate arch -->
+    <path d="M13 28 L13 22 Q16 18 19 22 L19 28 Z" fill="#1a0f00"/>
+    <!-- Left tower -->
+    <rect x="2" y="10" width="8" height="18" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
+    <!-- Right tower -->
+    <rect x="22" y="10" width="8" height="18" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
+    <!-- Center tower -->
+    <rect x="11" y="7" width="10" height="12" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
+    <!-- Left battlement -->
+    <rect x="2" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="5" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="8" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <!-- Right battlement -->
+    <rect x="22" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="25" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="28" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <!-- Center battlement -->
+    <rect x="11" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="14" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <rect x="17" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
+    <!-- Window left tower -->
+    <rect x="5" y="13" width="2" height="3" fill="#1a0f00" rx="0.5"/>
+    <!-- Window right tower -->
+    <rect x="25" y="13" width="2" height="3" fill="#1a0f00" rx="0.5"/>
+    <!-- Window center tower -->
+    <rect x="15" y="9" width="2" height="3" fill="#1a0f00" rx="0.5"/>
+  </svg>
+`;
+
+const OTHER_SVG = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+    <circle cx="16" cy="13" r="9" fill="#4a6fa5" stroke="white" stroke-width="0.8"/>
+    <circle cx="16" cy="13" r="3.5" fill="white"/>
+    <path d="M16 22 L13 28 L16 26 L19 28 Z" fill="#4a6fa5" stroke="white" stroke-width="0.5"/>
+  </svg>
+`;
+
+function createMarkerElement(isEditMode: boolean, type: LocationType): HTMLElement {
   const el = document.createElement("div");
   el.style.cssText = `
     width: 32px;
@@ -25,38 +66,7 @@ function createMarkerElement(isEditMode: boolean): HTMLElement {
     cursor: ${isEditMode ? "grab" : "pointer"};
     filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
   `;
-  el.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-      <!-- Base wall -->
-      <rect x="3" y="16" width="26" height="12" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
-      <!-- Gate arch -->
-      <path d="M13 28 L13 22 Q16 18 19 22 L19 28 Z" fill="#1a0f00"/>
-      <!-- Left tower -->
-      <rect x="2" y="10" width="8" height="18" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
-      <!-- Right tower -->
-      <rect x="22" y="10" width="8" height="18" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
-      <!-- Center tower -->
-      <rect x="11" y="7" width="10" height="12" fill="#8b3a2a" stroke="white" stroke-width="0.5" rx="1"/>
-      <!-- Left battlement -->
-      <rect x="2" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="5" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="8" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <!-- Right battlement -->
-      <rect x="22" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="25" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="28" y="7" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <!-- Center battlement -->
-      <rect x="11" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="14" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <rect x="17" y="4" width="2" height="4" fill="#8b3a2a" stroke="white" stroke-width="0.5"/>
-      <!-- Window left tower -->
-      <rect x="5" y="13" width="2" height="3" fill="#1a0f00" rx="0.5"/>
-      <!-- Window right tower -->
-      <rect x="25" y="13" width="2" height="3" fill="#1a0f00" rx="0.5"/>
-      <!-- Window center tower -->
-      <rect x="15" y="9" width="2" height="3" fill="#1a0f00" rx="0.5"/>
-    </svg>
-  `;
+  el.innerHTML = type === "settlement" ? SETTLEMENT_SVG : OTHER_SVG;
   return el;
 }
 
@@ -64,11 +74,11 @@ function createMarkerRecord(
   map: mapboxgl.Map,
   location: Location,
   isEditMode: boolean,
-  onView: (location: Location) => void,
+  onView: (location: Location, pixel: { x: number; y: number }) => void,
   onEdit: (location: Location) => void,
   onMove: (id: string, coordinates: [number, number]) => void,
 ): MarkerRecord {
-  const el = createMarkerElement(isEditMode);
+  const el = createMarkerElement(isEditMode, location.type);
 
   const marker = new mapboxgl.Marker({ element: el, draggable: isEditMode, anchor: "bottom" })
     .setLngLat(location.coordinates)
@@ -95,7 +105,12 @@ function createMarkerRecord(
     if (isEditMode) {
       onEdit(location);
     } else {
-      onView(location);
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const container = map.getContainer().getBoundingClientRect();
+      onView(location, {
+        x: rect.left + rect.width / 2 - container.left,
+        y: rect.top - container.top,
+      });
     }
   };
 

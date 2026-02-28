@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { Location } from '@/types/map'
+import type { Location, LocationType } from '@/types/map'
+import { TypeSegment } from '@/components/TypeSegment'
 
 interface EditLocationFormProps {
   location: Location
@@ -11,11 +12,12 @@ interface EditLocationFormProps {
 export function EditLocationForm({ location, onSave, onDelete, onCancel }: EditLocationFormProps) {
   const [label, setLabel] = useState(location.label)
   const [link, setLink] = useState(location.link)
+  const [type, setType] = useState<LocationType>(location.type)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!label.trim()) return
-    onSave({ ...location, label: label.trim(), link: link.trim() })
+    onSave({ ...location, label: label.trim(), link: link.trim(), type })
   }
 
   return (
@@ -77,6 +79,7 @@ export function EditLocationForm({ location, onSave, onDelete, onCancel }: EditL
             }}
           />
         </label>
+        <TypeSegment value={type} onChange={setType} />
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
           <button
             type="button"

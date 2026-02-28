@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import type { RefObject } from 'react'
-import type { Location } from '@/types/map'
+import type { Location, LocationType } from '@/types/map'
+import { TypeSegment } from '@/components/TypeSegment'
 
 interface AddLocationFormProps {
   mapRef: RefObject<mapboxgl.Map | null>
@@ -13,6 +14,7 @@ interface AddLocationFormProps {
 export function AddLocationForm({ mapRef, coordinates, onConfirm, onCancel }: AddLocationFormProps) {
   const [label, setLabel] = useState('')
   const [link, setLink] = useState('')
+  const [type, setType] = useState<LocationType>('settlement')
 
   // Ghost marker — shows the pin location while the form is open
   const ghostMarkerRef = useRef<mapboxgl.Marker | null>(null)
@@ -39,6 +41,7 @@ export function AddLocationForm({ mapRef, coordinates, onConfirm, onCancel }: Ad
       coordinates,
       label: label.trim(),
       link: link.trim(),
+      type,
     })
   }
 
@@ -104,6 +107,7 @@ export function AddLocationForm({ mapRef, coordinates, onConfirm, onCancel }: Ad
             }}
           />
         </label>
+        <TypeSegment value={type} onChange={setType} />
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
           <button
             type="button"

@@ -5,11 +5,14 @@ export interface MapConfig {
   style: string | mapboxgl.Style;
 }
 
+export type LocationType = 'settlement' | 'other';
+
 export interface Location {
   id: string;
   coordinates: [number, number]; // [longitude, latitude]
   label: string;
   link: string;
+  type: LocationType;
 }
 
 export interface MapDefinition {

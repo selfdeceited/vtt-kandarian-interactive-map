@@ -22,15 +22,16 @@ export const MAPS: MapDefinition[] = [
     label: 'Arnen',
     imageUrl:
       'https://vtt-kandarian-world-info.vercel.app/img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/assets/arnen_large.webp',
-    // TODO: replace with real Arnen bounds once coordinates are known
+    // Placeholder — replace with real bounds once known
+    // Lat span: 0.0068°, Lon span: 0.0136°
     imageCoordinates: [
-      [-78.114, 43.249], // Top Left (placeholder)
-      [-73.826, 43.249], // Top Right (placeholder)
-      [-73.826, 41.124], // Bottom Right (placeholder)
-      [-78.114, 41.124], // Bottom Left (placeholder)
+      [-75.9768, 42.1904], // Top Left
+      [-75.9632, 42.1904], // Top Right
+      [-75.9632, 42.1836], // Bottom Right
+      [-75.9768, 42.1836], // Bottom Left
     ],
     center: [-75.97, 42.187],
-    zoom: 9,
+    zoom: 17,
   },
 ]
 
