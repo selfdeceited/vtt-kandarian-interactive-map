@@ -6,6 +6,7 @@ import { EditLocationForm } from "@/components/EditLocationForm";
 import { LocationPanel } from "@/components/LocationPanel";
 import { LabelPopover } from "@/components/LabelPopover";
 import { MapSwitcherPanel } from "@/components/MapSwitcherPanel";
+import { SearchMarkers } from "@/components/SearchMarkers";
 import { useMapbox } from "@/hooks/useMapbox";
 import { useLocations } from "@/hooks/useLocations";
 import { useMarkers } from "@/hooks/useMarkers";
@@ -132,6 +133,17 @@ function App() {
     [locations, updateLocation],
   );
 
+  const handleSearchSelect = useCallback(
+    (location: Location) => {
+      const map = mapRef.current;
+      if (!map) return;
+      const pixel = map.project(location.coordinates as [number, number]);
+      setActiveLocation(location);
+      setPopoverPixel({ x: pixel.x, y: pixel.y });
+    },
+    [mapRef],
+  );
+
   const handleToggleEditMode = useCallback(() => {
     setIsEditMode((prev) => !prev);
     setPendingCoordinates(null);
@@ -165,6 +177,14 @@ function App() {
         activeMapId={activeMapId}
         onSelect={handleSelectMap}
       />
+      {isMapReady && (
+        <SearchMarkers
+          locations={locations}
+          mapRef={mapRef}
+          accessToken={ACCESS_TOKEN}
+          onSelect={handleSearchSelect}
+        />
+      )}
       {import.meta.env.DEV && (
         <EditModeToggle isEditMode={isEditMode} onToggle={handleToggleEditMode} />
       )}

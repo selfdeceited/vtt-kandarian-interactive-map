@@ -479,6 +479,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@floating-ui/core@npm:0.7.3"
+  checksum: 10c0/5173066faf454f1475f465adeaab04fb195670cda019109660199587c05bf2fa74d79a50e53c1d2fed426d6a40f9698afa4d386e89485843c46a7ffba850efe1
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^0.5.2":
+  version: 0.5.4
+  resolution: "@floating-ui/dom@npm:0.5.4"
+  dependencies:
+    "@floating-ui/core": "npm:^0.7.3"
+  checksum: 10c0/c395ec32862ef4d4a1d5c3cb3b54b462f7872a323746e0b5f7f7a31b17570a042ad1f1b134040a30bf0d6181c14867daebfac1c1bb89b42f8f000b3f9981516c
+  languageName: node
+  linkType: hard
+
 "@gar/promise-retry@npm:^1.0.0":
   version: 1.0.2
   resolution: "@gar/promise-retry@npm:1.0.2"
@@ -590,6 +606,57 @@ __metadata:
   version: 1.1.0
   resolution: "@mapbox/point-geometry@npm:1.1.0"
   checksum: 10c0/fe43d00a92592a28835090722df771be50182ff5fc40705cbd571534e2397beef884a97f701869b4a99a61289700cf709f588883f4b085c034bbe722cf17155d
+  languageName: node
+  linkType: hard
+
+"@mapbox/search-js-core@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "@mapbox/search-js-core@npm:1.5.1"
+  dependencies:
+    "@types/geojson": "npm:^7946.0.8"
+  checksum: 10c0/f79182b569d71b407452f24712f306cd166011c89b593a6467db1cb3b360966acc5456c72a67fae56ba603a024bc1ae22a6accb6b0bb9813808c4b0d7836e13a
+  languageName: node
+  linkType: hard
+
+"@mapbox/search-js-react@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "@mapbox/search-js-react@npm:1.5.1"
+  dependencies:
+    "@mapbox/search-js-core": "npm:^1.5.1"
+    "@mapbox/search-js-web": "npm:^1.5.1"
+    "@types/geojson": "npm:^7946.0.8"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 10c0/01f5cb870a4c49091b11a68a02d8d592e9086b32aec43efac9d42e944cb744246e2611a2af47af565365532762e9243f6f42294f81e56a56844c4491eb624577
+  languageName: node
+  linkType: hard
+
+"@mapbox/search-js-web@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "@mapbox/search-js-web@npm:1.5.1"
+  dependencies:
+    "@floating-ui/dom": "npm:^0.5.2"
+    "@mapbox/search-js-core": "npm:^1.5.1"
+    "@mapbox/sphericalmercator": "npm:^1.2.0"
+    focus-trap: "npm:^6.7.3"
+    no-scroll: "npm:^2.1.1"
+    subtag: "npm:^0.5.0"
+  peerDependencies:
+    mapbox-gl: ">=2.7.0"
+  checksum: 10c0/5d900d7c01cb0e322bbfb4e0d284d94f333878d451faaf291ea7a1fdadfec9600731c3e69894757d26de3a1a4f95018b4e9745f0fdc1157c0c03662fd82ca3bf
+  languageName: node
+  linkType: hard
+
+"@mapbox/sphericalmercator@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@mapbox/sphericalmercator@npm:1.2.0"
+  bin:
+    bbox: bin/bbox.js
+    to4326: bin/to4326.js
+    to900913: bin/to900913.js
+    xyz: bin/xyz.js
+  checksum: 10c0/bb4b43fa1dbd4bd3f44dc476a51dc6c2d776c1b7eedb683afa8b5ff1f37cc3ec4f6b069e9c180c8bbfa9c844358483f5dc574fa87d203c2b4ad01a673461908e
   languageName: node
   linkType: hard
 
@@ -879,7 +946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:*, @types/geojson@npm:^7946.0.16":
+"@types/geojson@npm:*, @types/geojson@npm:^7946.0.16, @types/geojson@npm:^7946.0.8":
   version: 7946.0.16
   resolution: "@types/geojson@npm:7946.0.16"
   checksum: 10c0/1ff24a288bd5860b766b073ead337d31d73bdc715e5b50a2cee5cb0af57a1ed02cc04ef295f5fa68dc40fe3e4f104dd31282b2b818a5ba3231bc1001ba084e3c
@@ -1700,6 +1767,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"focus-trap@npm:^6.7.3":
+  version: 6.9.4
+  resolution: "focus-trap@npm:6.9.4"
+  dependencies:
+    tabbable: "npm:^5.3.3"
+  checksum: 10c0/f01986dac9f21b1091444b75125cf98e230c4263f5e8900b5264f68a1b6d7e35910fb42bbfa70cc9a7d98d7f9fd9d9303f4cb37bd09f35e076a82f51236807d1
+  languageName: node
+  linkType: hard
+
 "fs-minipass@npm:^3.0.0":
   version: 3.0.3
   resolution: "fs-minipass@npm:3.0.3"
@@ -2242,6 +2318,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"no-scroll@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "no-scroll@npm:2.1.1"
+  checksum: 10c0/457c2af57d1c5e2bf5031dba96732af971f0a45ad690f3326920e73becf0286470442b768795ef68d3da78ac3f97d6db528dfdc505310da5bd8da56e4875926a
+  languageName: node
+  linkType: hard
+
 "node-gyp@npm:latest":
   version: 12.2.0
   resolution: "node-gyp@npm:12.2.0"
@@ -2681,6 +2764,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"subtag@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "subtag@npm:0.5.0"
+  checksum: 10c0/f2827c76458cc1871c12c98d11d519c6027dee796c250fee0c5dc47d8afbab634afe9fe992de51887c5dd7172dd115501dcfc077f098bae81471f241260eb115
+  languageName: node
+  linkType: hard
+
 "supercluster@npm:^8.0.1":
   version: 8.0.1
   resolution: "supercluster@npm:8.0.1"
@@ -2696,6 +2786,13 @@ __metadata:
   dependencies:
     has-flag: "npm:^4.0.0"
   checksum: 10c0/afb4c88521b8b136b5f5f95160c98dee7243dc79d5432db7efc27efb219385bbc7d9427398e43dd6cc730a0f87d5085ce1652af7efbe391327bc0a7d0f7fc124
+  languageName: node
+  linkType: hard
+
+"tabbable@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "tabbable@npm:5.3.3"
+  checksum: 10c0/c6cb54be76ecff7d0132fed77ff11cedf76a2ce320f55e350f70d8f68998227e72bc3f8b1ee5e7b02dbe4b4c2ef7b6fa43c3aea7cfa82ef06e7d23746df97a35
   languageName: node
   linkType: hard
 
@@ -2890,6 +2987,7 @@ __metadata:
   resolution: "vtt-kandarian-interactive-map@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.3"
+    "@mapbox/search-js-react": "npm:^1.5.1"
     "@types/mapbox-gl": "npm:^3.5.0"
     "@types/node": "npm:^25.3.2"
     "@types/react": "npm:^19.2.14"

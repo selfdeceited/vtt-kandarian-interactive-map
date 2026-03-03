@@ -21,7 +21,7 @@ export const MAPS: MapDefinition[] = [
     id: "arnen",
     label: "Arnen",
     imageUrl:
-      "https://vtt-kandarian-world-info.vercel.app/img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/assets/arnen_large.WEBP",
+      "https://vtt-kandarian-world-info.vercel.app/img/user/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D0%B8%D0%B0%D0%BD/assets/arnen_large.webp",
     // Placeholder — replace with real bounds once known
     // Lat span: 0.0068°, Lon span: 0.0136°
     imageCoordinates: [

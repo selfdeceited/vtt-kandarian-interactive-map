@@ -19,7 +19,7 @@ export function LocationPanel({ location, onClose }: LocationPanelProps) {
           right: 20px;
           bottom: 20px;
           width: 480px;
-          z-index: 10;
+          z-index: 20;
           display: flex;
           flex-direction: column;
           border-radius: 8px;
