@@ -9,10 +9,6 @@ export function EditModeToggle({ isEditMode, onToggle }: EditModeToggleProps) {
       onClick={onToggle}
       title={isEditMode ? 'Exit edit mode' : 'Enter edit mode — click the map to add locations'}
       style={{
-        position: 'absolute',
-        top: '10px',
-        left: '10px',
-        zIndex: 10,
         padding: '8px 14px',
         background: isEditMode ? '#c0392b' : '#2c3e50',
         color: 'white',

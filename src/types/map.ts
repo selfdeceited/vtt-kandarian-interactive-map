@@ -29,7 +29,22 @@ export interface MapDefinition {
   zoom: number;
 }
 
+export interface PathNode {
+  id: string;
+  coordinates: [number, number];
+  label?: string;
+  link?: string;
+}
+
+export interface Path {
+  id: string;
+  nodes: PathNode[];
+  label: string;
+  link?: string;
+}
+
 export interface MapStore {
   map: string; // matches MapDefinition.id
   markers: Location[];
+  paths?: Path[];
 }

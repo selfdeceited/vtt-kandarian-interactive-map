@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import type { Location, LocationType, MapStore } from "@/types/map";
+import type { Location, LocationType, MapStore, Path } from "@/types/map";
 
 function normaliseMarker(m: unknown): Location {
   const loc = m as Record<string, unknown>;
@@ -59,6 +59,22 @@ function setMarkers(
     return store.map((s) => (s.map === mapId ? { ...s, markers } : s));
   }
   return [...store, { map: mapId, markers }];
+}
+
+function getPaths(store: MapStore[], mapId: string): Path[] {
+  return store.find((s) => s.map === mapId)?.paths ?? [];
+}
+
+function setPaths(
+  store: MapStore[],
+  mapId: string,
+  paths: Path[],
+): MapStore[] {
+  const exists = store.some((s) => s.map === mapId);
+  if (exists) {
+    return store.map((s) => (s.map === mapId ? { ...s, paths } : s));
+  }
+  return [...store, { map: mapId, markers: [], paths }];
 }
 
 export type LocationsStatus = "loading" | "ready" | "error";
@@ -135,14 +151,60 @@ export function useLocations(mapId: string) {
     [mapId, persist],
   );
 
+  const addPath = useCallback(
+    (path: Path) => {
+      const current = getPaths(storeRef.current, mapId);
+      const next = setPaths(storeRef.current, mapId, [...current, path]);
+      storeRef.current = next;
+      setStore(next);
+      persist(next);
+    },
+    [mapId, persist],
+  );
+
+  const updatePath = useCallback(
+    (updated: Path) => {
+      const current = getPaths(storeRef.current, mapId);
+      const next = setPaths(
+        storeRef.current,
+        mapId,
+        current.map((p) => (p.id === updated.id ? updated : p)),
+      );
+      storeRef.current = next;
+      setStore(next);
+      persist(next);
+    },
+    [mapId, persist],
+  );
+
+  const deletePath = useCallback(
+    (id: string) => {
+      const current = getPaths(storeRef.current, mapId);
+      const next = setPaths(
+        storeRef.current,
+        mapId,
+        current.filter((p) => p.id !== id),
+      );
+      storeRef.current = next;
+      setStore(next);
+      persist(next);
+    },
+    [mapId, persist],
+  );
+
   const locations = getMarkers(store, mapId);
+  const paths = getPaths(store, mapId);
 
   return {
     locations,
+    paths,
     status,
     isSyncing,
     addLocation,
     deleteLocation,
     updateLocation,
+    addPath,
+    updatePath,
+    deletePath,
   };
 }
